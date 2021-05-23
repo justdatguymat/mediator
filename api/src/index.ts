@@ -1,33 +1,89 @@
 import dotenv from 'dotenv';
-import express from 'express';
-const WebTorrent = require('webtorrent');
+import request from 'request';
+import express, { Request, Response } from 'express';
+import WebTorrent, { Torrent } from 'webtorrent';
 
 dotenv.config();
 
-const port = process.env.SERVER_PORT;
+const API_KEY = '2cb9f04a7fmsh358ce8dfb6d4721p117554jsn2eb963a3f3f9';
+const API_HOST = 'ThePirateBayvolodimir-kudriachenkoV1.p.rapidapi.com';
+const MAGNET_URI ='https://webtorrent.io/torrents/sintel.torrent';
+
 const app = express();
-const client: WebTorrent = new WebTorrent();
+const port = process.env.SERVER_PORT;
 
-const MAGNET_URI =
-  'magnet:?xt=urn:btih:97533F2033BD41367C8D39D22EBCB7FD963E91C9&dn=The+Father+%282020%29+%5B1080p%5D+%5BWEBRip%5D+%5B5.1%5D&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2F47.ip-51-68-199.eu%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.pirateparty.gr%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce+n';
+const client = new WebTorrent();
 
-app.get('/download', (req, res) => {
-  client.add(MAGNET_URI, { path: '/home/mati/tmp' }, (torrent) => {
+
+const options = (query: string) => ({
+  method: 'POST',
+  url: 'https://thepiratebayvolodimir-kudriachenkov1.p.rapidapi.com/search',
+  headers: {
+    'content-type': 'application/x-www-form-urlencoded',
+    'x-rapidapi-key': API_KEY,
+    'x-rapidapi-host': API_HOST,
+    useQueryString: true
+  },
+  form: {query: query, orderBy: 'seeds'}
+});
+
+
+function downloadTorrent(uri: string) {
+  client.add(uri, {path: './downloads'}, (torrent: Torrent) => {
+    console.log(`Downloading the torrent: ${torrent.infoHash}`);
+
     torrent.on('done', () => {
       console.log('Torrent download finished.');
     });
-    torrent.on('download', () => {
-      console.log('just downloaded: ' + bytes);
-      console.log('total downloaded: ' + torrent.downloaded);
-      console.log('download speed: ' + torrent.downloadSpeed);
-      console.log('progress: ' + torrent.progress);
+
+    torrent.on('download', (bytes) => {
+      console.log('just downloaded: ' + prettyBytes(bytes));
+      onProgress();
     });
-    const msg = `Downloading the torrent: ${torrent.infoHash}`;
-    console.log(msg);
-    res.send(msg);
+
+    function onProgress() {
+      const percent = Math.round(torrent.progress * 100 * 100) / 100;
+      console.log('bytes received: ' + prettyBytes(torrent.received));
+      console.log('number of peers: ' +  torrent.numPeers);
+      console.log('total downloaded: ' + prettyBytes(torrent.downloadSpeed));
+      console.log('download speed: ' + torrent.downloadSpeed);
+      console.log(`progress: ${percent}%`);
+    }
+    
   });
+}
+
+app.get('/search', (_req: Request, res: Response) => {
+  request(options('avengers endgame'), (error: any, _response: request.Response , body : any)=> {
+    if (error) throw new Error(error);
+    res.send(body);
+  });
+});
+
+app.get('/download', (_req: Request, res: Response) => {
+  downloadTorrent(MAGNET_URI);
+  res.send(MAGNET_URI);
 });
 
 app.listen(port, () => {
   console.log('Server running on', port);
 });
+
+process.once('SIGUSR2', function () {
+  process.kill(process.pid, 'SIGUSR2');
+});
+
+process.on('SIGINT', function () {
+  process.kill(process.pid, 'SIGINT');
+});
+
+function prettyBytes(num: number) {
+  const neg = num < 0;
+  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  if (neg) num = -num;
+  if (num < 1) return (neg ? '-' : '') + num + ' B';
+  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1);
+  num = Number((num / Math.pow(1000, exponent)).toFixed(2));
+  const unit = units[exponent];
+  return (neg ? '-' : '') + num + ' ' + unit;
+}

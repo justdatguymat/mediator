@@ -1,15 +1,24 @@
 module.exports = {
+  env: {
+    es6: true,
+    node: true,
+  },
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly',
+  },
   parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2018,
     sourceType: 'module',
   },
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    //'prettier/@typescript-eslint',
-    'plugin:prettier/recommended',
-  ],
   rules: {
-    // "@typescript-eslint/explicit-function-return-type": "off",
+    //"@typescript-eslint/rule-name": "error",
+    indent: ['error', 2, { SwitchCase: 1 }],
+    quotes: ['error', 'single'],
+    semi: ['error', 'always'],
+    'no-unused-vars': [2, { args: 'after-used', argsIgnorePattern: '^_*' }],
   },
 };

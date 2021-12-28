@@ -1,3 +1,4 @@
+app/.next
 **/node_modules
 **/dist
 **/downloads

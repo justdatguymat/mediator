@@ -1,6 +1,16 @@
 version: "3.8"
 
 services:
+  app:
+    build:
+      context: ./app
+      target: build
+    volumes:
+      - ./app:/app
+      - /Movies:/Movies
+    ports:
+      - 3000:3000
+    entrypoint: yarn dev
   api:
     build:
       context: ./api

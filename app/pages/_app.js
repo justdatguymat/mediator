@@ -1,46 +1,47 @@
-import React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider, Theme } from '@mui/material/styles';
-import { lime, lightBlue } from '@mui/material/colors';
+import React from "react";
+import Head from "next/head";
+import CssBaseline from "@mui/material/CssBaseline";
+import { createTheme, ThemeProvider, Theme } from "@mui/material/styles";
+import { lime, lightBlue } from "@mui/material/colors";
 
 const fontFamilies = {
   body: [
-    'Montserrat',
-    '\'Open Sans\'',
-    '\'Nato Sans\'',
-    'Lato',
-    'Roboto',
-    '\'Helvetica Neue\'',
-    'Arial',
-    'sans-serif',
-    '-apple-system',
-    'BlinkMacSystemFont',
-  ].join(','),
+    "Montserrat",
+    "'Open Sans'",
+    "'Nato Sans'",
+    "Lato",
+    "Roboto",
+    "'Helvetica Neue'",
+    "Arial",
+    "sans-serif",
+    "-apple-system",
+    "BlinkMacSystemFont",
+  ].join(","),
   headers: [
-    'Pushster',
-    //'Anton',
-    //'\'Rammetto One\'',
-    //'Syncopate',
-    //'\'Poller One\'',
-    //'Righteous',
-    //'\'Gravitas One\'',
-    //'\'Wendy One\'',
-    //'\'Text me One\'',
-    //'\'Helvetica Neue\'',
-    //'Arial',
-    //'sans-serif',
-    //'-apple-system',
-    //'BlinkMacSystemFont',
-  ].join(','),
+    "Pushster",
+    // 'Anton',
+    // '\'Rammetto One\'',
+    // 'Syncopate',
+    // '\'Poller One\'',
+    // 'Righteous',
+    // '\'Gravitas One\'',
+    // '\'Wendy One\'',
+    // '\'Text me One\'',
+    // '\'Helvetica Neue\'',
+    // 'Arial',
+    // 'sans-serif',
+    // '-apple-system',
+    // 'BlinkMacSystemFont',
+  ].join(","),
 };
 
 const theme = createTheme({
-  //inputVariant: 'outlined',
-  //buttonVariant: {
+  // inputVariant: 'outlined',
+  // buttonVariant: {
   //  primary: 'contained',
   //  secondary: 'text',
-  //},
-  //spacing: (factor) => `${0.5 * factor}rem`,
+  // },
+  // spacing: (factor) => `${0.5 * factor}rem`,
   shape: {
     borderRadius: 10,
   },
@@ -53,15 +54,15 @@ const theme = createTheme({
     },
     primary: {
       main: lime[500],
-      contrastText: "white"
+      contrastText: "white",
     },
     secondary: {
       main: lightBlue[500],
-      contrastText: "white"
+      contrastText: "white",
     },
     background: {
       default: lime[50],
-      //paper: 'white',
+      // paper: 'white',
     },
   },
   typography: {
@@ -90,13 +91,15 @@ const theme = createTheme({
   },
 });
 
-
 export default function Main({ Component, pageProps }) {
   return (
     <ThemeProvider theme={theme}>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pushster&display=swap');
-      </style>
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Pushster&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
       <CssBaseline />
       <Component {...pageProps} />
     </ThemeProvider>
